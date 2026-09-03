@@ -1,0 +1,17 @@
+url,label
+https://www.google.com,0
+https://www.microsoft.com,0
+https://www.wikipedia.org,0
+https://www.amazon.com,0
+https://www.github.com,0
+https://www.apple.com,0
+https://www.linkedin.com,0
+https://www.python.org,0
+http://paypal-login-security.example.com,1
+http://verify-account-security.example.com,1
+http://login-confirm-user.example.com,1
+http://free-prize-winner.example.com,1
+http://account-suspended-verify.example.com,1
+http://secure-bank-login.example.com,1
+http://update-payment-details.example.com,1
+http://urgent-password-reset.example.com,1

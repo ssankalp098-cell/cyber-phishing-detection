@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Phishing URL Detector</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #071e3d, #1f6f8b);
+            padding: 30px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 750px;
+            padding: 40px;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(15px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+            text-align: center;
+        }
+
+        .icon {
+            font-size: 55px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: white;
+            font-size: 38px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #e5e5e5;
+            font-size: 17px;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            margin-bottom: 18px;
+        }
+
+        button {
+            width: 100%;
+            padding: 17px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            background: #00d26a;
+            color: white;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.02);
+            opacity: 0.9;
+        }
+
+        .result {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .safe {
+            background: rgba(0, 200, 100, 0.25);
+            color: #8cffbd;
+            border: 2px solid #00d26a;
+        }
+
+        .danger {
+            background: rgba(255, 50, 50, 0.25);
+            color: #ff9b9b;
+            border: 2px solid #ff4444;
+        }
+
+        .confidence {
+            margin-top: 12px;
+            font-size: 16px;
+            font-weight: normal;
+        }
+
+        /* Feature Analysis */
+
+        .features {
+            margin-top: 25px;
+            text-align: left;
+            background: rgba(0, 0, 0, 0.20);
+            padding: 22px;
+            border-radius: 15px;
+        }
+
+        .features h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 18px;
+            font-size: 24px;
+        }
+
+        .feature {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+        }
+
+        .feature:last-child {
+            border-bottom: none;
+        }
+
+        .feature-name {
+            color: #d8f3ff;
+        }
+
+        .feature-value {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .footer {
+            margin-top: 30px;
+            color: #dddddd;
+            font-size: 14px;
+        }
+
+    </style>
+   
+
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <div class="icon">🛡️</div>
+
+        <h1>Phishing URL Detector</h1>
+
+        <p class="subtitle">
+            Machine Learning Based Cyber Phishing Detection System
+        </p>
+
+
+        <form method="POST">
+
+            <input
+                type="text"
+                name="url"
+                placeholder="Enter website URL..."
+                value="{{ url }}"
+                required
+            >
+
+            <button type="submit">
+                🔍 CHECK URL
+            </button>
+
+        </form>
+
+
+        {% if result %}
+
+        <!-- Prediction Result -->
+
+        <div class="result {{ result_class }}">
+
+            {{ result }}
+
+            {% if confidence %}
+
+            <div class="confidence">
+                Prediction Confidence:
+                <strong>{{ confidence }}%</strong>
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- Feature Analysis -->
+
+        {% if feature_details %}
+
+        <div class="features">
+
+            <h2>🔍 URL Feature Analysis</h2>
+
+
+            {% for name, value in feature_details.items() %}
+
+            <div class="feature">
+
+                <span class="feature-name">
+                    {{ name }}
+                </span>
+
+                <span class="feature-value">
+                    {{ value }}
+                </span>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+        {% endif %}
+
+
+        {% endif %}
+
+
+        <!-- How It Works -->
+
+<div class="how-it-works">
+
+    <h2>⚙️ How It Works</h2>
+
+    <div class="steps">
+
+        <div class="step">
+            <div class="step-icon">🌐</div>
+            <h3>1. URL Input</h3>
+            <p>User enters a website URL</p>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div class="step">
+            <div class="step-icon">🔍</div>
+            <h3>2. Feature Extraction</h3>
+            <p>URL characteristics are analyzed</p>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div class="step">
+            <div class="step-icon">🧠</div>
+            <h3>3. ML Prediction</h3>
+            <p>Random Forest analyzes the features</p>
+        </div>
+
+        <div class="arrow">→</div>
+
+        <div class="step">
+            <div class="step-icon">🛡️</div>
+            <h3>4. Result</h3>
+            <p>Legitimate or phishing result</p>
+        </div>
+
+    </div>
+
+</div>
+
+
+<div class="footer">
+
+    Powered by Machine Learning • Random Forest Classifier
+
+</div>
+
+    </div>
+
+</body>
+
+</html>

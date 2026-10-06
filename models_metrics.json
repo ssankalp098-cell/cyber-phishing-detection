@@ -1,0 +1,170 @@
+{
+    "random_forest": {
+        "key": "random_forest",
+        "name": "Random Forest",
+        "type": "Ensemble (Bagging)",
+        "description": "High accuracy ensemble using diverse decision trees with feature bagging.",
+        "accuracy": 100.0,
+        "precision": 100.0,
+        "recall": 100.0,
+        "f1_score": 100.0,
+        "cv_accuracy": 100.0,
+        "confusion_matrix": [
+            [
+                371,
+                0
+            ],
+            [
+                0,
+                155
+            ]
+        ]
+    },
+    "gradient_boosting": {
+        "key": "gradient_boosting",
+        "name": "Gradient Boosting",
+        "type": "Ensemble (Boosting)",
+        "description": "Iterative boosting model that minimizes residual errors sequentially.",
+        "accuracy": 100.0,
+        "precision": 100.0,
+        "recall": 100.0,
+        "f1_score": 100.0,
+        "cv_accuracy": 100.0,
+        "confusion_matrix": [
+            [
+                371,
+                0
+            ],
+            [
+                0,
+                155
+            ]
+        ]
+    },
+    "decision_tree": {
+        "key": "decision_tree",
+        "name": "Decision Tree",
+        "type": "Tree-Based",
+        "description": "Interpretable hierarchical decision rules for rapid classification.",
+        "accuracy": 99.62,
+        "precision": 100.0,
+        "recall": 98.71,
+        "f1_score": 99.35,
+        "cv_accuracy": 99.86,
+        "confusion_matrix": [
+            [
+                371,
+                0
+            ],
+            [
+                2,
+                153
+            ]
+        ]
+    },
+    "logistic_regression": {
+        "key": "logistic_regression",
+        "name": "Logistic Regression",
+        "type": "Linear Model",
+        "description": "Probabilistic linear classifier with feature normalization.",
+        "accuracy": 99.43,
+        "precision": 99.35,
+        "recall": 98.71,
+        "f1_score": 99.03,
+        "cv_accuracy": 99.57,
+        "confusion_matrix": [
+            [
+                370,
+                1
+            ],
+            [
+                2,
+                153
+            ]
+        ]
+    },
+    "svm": {
+        "key": "svm",
+        "name": "Support Vector Machine (SVM)",
+        "type": "Kernel / Margin",
+        "description": "Finds optimal hyperplane separator with calibrated probability estimation.",
+        "accuracy": 99.81,
+        "precision": 99.36,
+        "recall": 100.0,
+        "f1_score": 99.68,
+        "cv_accuracy": 99.9,
+        "confusion_matrix": [
+            [
+                370,
+                1
+            ],
+            [
+                0,
+                155
+            ]
+        ]
+    },
+    "naive_bayes": {
+        "key": "naive_bayes",
+        "name": "Naive Bayes (Gaussian)",
+        "type": "Probabilistic",
+        "description": "Fast Bayesian likelihood classifier assuming feature independence.",
+        "accuracy": 98.1,
+        "precision": 99.32,
+        "recall": 94.19,
+        "f1_score": 96.69,
+        "cv_accuracy": 98.29,
+        "confusion_matrix": [
+            [
+                370,
+                1
+            ],
+            [
+                9,
+                146
+            ]
+        ]
+    },
+    "knn": {
+        "key": "knn",
+        "name": "K-Nearest Neighbors (KNN)",
+        "type": "Instance-Based",
+        "description": "Classifies URLs based on distance metrics to nearest neighbor samples.",
+        "accuracy": 99.81,
+        "precision": 99.36,
+        "recall": 100.0,
+        "f1_score": 99.68,
+        "cv_accuracy": 99.9,
+        "confusion_matrix": [
+            [
+                370,
+                1
+            ],
+            [
+                0,
+                155
+            ]
+        ]
+    },
+    "ensemble": {
+        "key": "ensemble",
+        "name": "Ensemble Voting (Soft Consensus)",
+        "type": "Meta-Classifier Ensemble",
+        "description": "Combines weighted probabilistic predictions from Random Forest, Gradient Boost, SVM, and LR.",
+        "accuracy": 100.0,
+        "precision": 100.0,
+        "recall": 100.0,
+        "f1_score": 100.0,
+        "cv_accuracy": 100.0,
+        "confusion_matrix": [
+            [
+                371,
+                0
+            ],
+            [
+                0,
+                155
+            ]
+        ]
+    }
+}

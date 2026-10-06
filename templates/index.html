@@ -4,10 +4,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Phishing URL Detector</title>
+    <title>CyberShield AI | Multi-Model Phishing URL Detection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --bg-base: #0a0e17;
+            --bg-card: rgba(18, 26, 43, 0.75);
+            --bg-card-hover: rgba(26, 38, 64, 0.85);
+            --border-glow: rgba(56, 189, 248, 0.25);
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.4);
+            --accent-safe: #10b981;
+            --accent-safe-glow: rgba(16, 185, 129, 0.35);
+            --accent-safe-bg: rgba(16, 185, 129, 0.12);
+            --accent-danger: #f43f5e;
+            --accent-danger-glow: rgba(244, 63, 94, 0.4);
+            --accent-danger-bg: rgba(244, 63, 94, 0.15);
+            --accent-warning: #f59e0b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --glass-bg: rgba(15, 23, 42, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;
@@ -15,281 +41,846 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
+            background: radial-gradient(circle at top right, #132742 0%, #0a0e17 60%),
+                        radial-gradient(circle at bottom left, #0e1e36 0%, #0a0e17 60%);
+            color: var(--text-primary);
+            padding: 40px 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            background: linear-gradient(135deg, #071e3d, #1f6f8b);
-            padding: 30px;
+            line-height: 1.5;
         }
 
-        .container {
-            width: 90%;
-            max-width: 750px;
-            padding: 40px;
-            border-radius: 25px;
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(15px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+        .ambient-glow {
+            position: fixed;
+            top: -150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, rgba(0, 0, 0, 0) 70%);
+            filter: blur(60px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-wrapper {
+            width: 100%;
+            max-width: 1100px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
             text-align: center;
+            margin-bottom: 35px;
         }
 
-        .icon {
-            font-size: 55px;
-            margin-bottom: 10px;
+        .badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 16px;
+            border-radius: 999px;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.15);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.7; }
+            50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 15px var(--primary); }
+            100% { transform: scale(0.95); opacity: 0.7; }
         }
 
         h1 {
-            color: white;
-            font-size: 38px;
-            margin-bottom: 10px;
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #ffffff 40%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
         }
 
         .subtitle {
-            color: #e5e5e5;
+            color: var(--text-secondary);
             font-size: 17px;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+
+        /* Glass Card */
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
             margin-bottom: 30px;
+            transition: all 0.3s ease;
         }
 
-        input[type="text"] {
-            width: 100%;
-            padding: 18px;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            outline: none;
-            margin-bottom: 18px;
-        }
-
-        button {
-            width: 100%;
-            padding: 17px;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            background: #00d26a;
-            color: white;
-            transition: 0.3s;
-        }
-
-        button:hover {
-            transform: scale(1.02);
-            opacity: 0.9;
-        }
-
-        .result {
-            margin-top: 25px;
-            padding: 20px;
-            border-radius: 12px;
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        .safe {
-            background: rgba(0, 200, 100, 0.25);
-            color: #8cffbd;
-            border: 2px solid #00d26a;
-        }
-
-        .danger {
-            background: rgba(255, 50, 50, 0.25);
-            color: #ff9b9b;
-            border: 2px solid #ff4444;
-        }
-
-        .confidence {
-            margin-top: 12px;
-            font-size: 16px;
-            font-weight: normal;
-        }
-
-        /* Feature Analysis */
-
-        .features {
-            margin-top: 25px;
-            text-align: left;
-            background: rgba(0, 0, 0, 0.20);
-            padding: 22px;
-            border-radius: 15px;
-        }
-
-        .features h2 {
-            color: white;
-            text-align: center;
-            margin-bottom: 18px;
-            font-size: 24px;
-        }
-
-        .feature {
+        /* Input Form */
+        .search-form {
             display: flex;
-            justify-content: space-between;
-            padding: 10px 5px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-            color: white;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        .feature:last-child {
-            border-bottom: none;
+        .form-row {
+            display: grid;
+            grid-template-columns: 280px 1fr auto;
+            gap: 14px;
         }
 
-        .feature-name {
-            color: #d8f3ff;
+        @media (max-width: 860px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .feature-value {
-            font-weight: bold;
+        .select-group, .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-select, .url-input {
+            width: 100%;
+            padding: 16px 20px;
+            background: rgba(10, 14, 23, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-md);
             color: #ffffff;
+            font-size: 15px;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.25s ease;
         }
 
-        .footer {
-            margin-top: 30px;
-            color: #dddddd;
+        .url-input {
+            font-family: 'JetBrains Mono', monospace;
             font-size: 14px;
         }
 
-    </style>
-   
+        .custom-select:focus, .url-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+        }
 
+        .btn-scan {
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #0284c7, #0ea5e9);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 24px rgba(2, 132, 199, 0.35);
+        }
+
+        .btn-scan:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(14, 165, 233, 0.5);
+            background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+        }
+
+        /* Quick Samples */
+        .sample-chips {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            padding: 5px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .chip:hover {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .chip.phish:hover {
+            background: rgba(244, 63, 94, 0.15);
+            color: var(--accent-danger);
+            border-color: var(--accent-danger);
+        }
+
+        /* Results Display */
+        .verdict-banner {
+            padding: 24px 30px;
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            animation: fadeIn 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .verdict-banner.safe {
+            background: var(--accent-safe-bg);
+            border: 1px solid var(--accent-safe);
+            box-shadow: 0 10px 30px var(--accent-safe-glow);
+        }
+
+        .verdict-banner.danger {
+            background: var(--accent-danger-bg);
+            border: 1px solid var(--accent-danger);
+            box-shadow: 0 10px 30px var(--accent-danger-glow);
+        }
+
+        .verdict-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .verdict-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
+        .verdict-banner.safe .verdict-icon {
+            background: rgba(16, 185, 129, 0.25);
+            color: #8cffbd;
+        }
+
+        .verdict-banner.danger .verdict-icon {
+            background: rgba(244, 63, 94, 0.25);
+            color: #ff9b9b;
+        }
+
+        .verdict-title {
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .verdict-banner.safe .verdict-title { color: #34d399; }
+        .verdict-banner.danger .verdict-title { color: #fb7185; }
+
+        .verdict-url {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-family: 'JetBrains Mono', monospace;
+            word-break: break-all;
+            margin-top: 4px;
+        }
+
+        .verdict-score {
+            text-align: right;
+        }
+
+        .verdict-score-num {
+            font-size: 32px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .verdict-banner.safe .verdict-score-num { color: #34d399; }
+        .verdict-banner.danger .verdict-score-num { color: #fb7185; }
+
+        .verdict-score-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.5px;
+        }
+
+        /* Section Headings */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Multi-Model Grid */
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 25px;
+        }
+
+        .model-card {
+            background: rgba(10, 14, 23, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.25s ease;
+        }
+
+        .model-card:hover {
+            border-color: rgba(56, 189, 248, 0.3);
+            background: rgba(15, 23, 42, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .model-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .model-name {
+            font-weight: 700;
+            font-size: 16px;
+            color: #f8fafc;
+        }
+
+        .model-type {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .status-pill {
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
+
+        .status-pill.danger {
+            background: var(--accent-danger-bg);
+            color: #fb7185;
+            border: 1px solid rgba(244, 63, 94, 0.4);
+        }
+
+        .status-pill.safe {
+            background: var(--accent-safe-bg);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .confidence-bar-bg {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            overflow: hidden;
+            margin: 10px 0 6px 0;
+        }
+
+        .confidence-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.8s ease;
+        }
+
+        .confidence-bar-fill.danger { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+        .confidence-bar-fill.safe { background: linear-gradient(90deg, #10b981, #34d399); }
+
+        .model-meta-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Feature Details Table / Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+        }
+
+        .feature-box {
+            background: rgba(10, 14, 23, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+        }
+
+        .feature-box-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .feature-box-val-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .feature-box-val {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .risk-tag {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .risk-tag.High { background: rgba(244, 63, 94, 0.2); color: #f43f5e; }
+        .risk-tag.Medium { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .risk-tag.Safe { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .risk-tag.Normal { background: rgba(255, 255, 255, 0.08); color: var(--text-muted); }
+
+        /* Benchmark Matrix Table */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .benchmark-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .benchmark-table th {
+            background: rgba(10, 14, 23, 0.8);
+            padding: 14px 18px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .benchmark-table td {
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+        }
+
+        .benchmark-table tr:hover td {
+            background: rgba(56, 189, 248, 0.04);
+        }
+
+        .metric-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            color: #38bdf8;
+        }
+
+        /* How it works */
+        .pipeline-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .pipeline-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pipeline-step {
+            background: rgba(10, 14, 23, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .step-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .step-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .footer-tech {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+    </style>
 </head>
 
-
 <body>
+    <div class="ambient-glow"></div>
 
-    <div class="container">
+    <div class="app-wrapper">
 
-        <div class="icon">🛡️</div>
+        <!-- Header -->
+        <header>
+            <div class="badge-pill">
+                <span class="pulse-dot"></span>
+                v2.0 Multi-Model AI Engine Active
+            </div>
+            <h1>CyberShield Phishing Detector</h1>
+            <p class="subtitle">
+                Comprehensive machine learning threat intelligence engine analyzing URL lexical characteristics, structural patterns, and heuristic entropy.
+            </p>
+        </header>
 
-        <h1>Phishing URL Detector</h1>
+        <!-- Main Scanner Card -->
+        <div class="glass-card">
+            <form method="POST" class="search-form">
+                <div class="form-row">
+                    <!-- Model Selector -->
+                    <div class="select-group">
+                        <select name="model" class="custom-select" id="modelSelect">
+                            <option value="all" {% if selected_model == 'all' %}selected{% endif %}>
+                                🌟 All Models (Ensemble Consensus)
+                            </option>
+                            {% for key, info in available_models.items() %}
+                            <option value="{{ key }}" {% if selected_model == key %}selected{% endif %}>
+                                ⚡ {{ info.name }} ({{ info.accuracy }}% Acc)
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-        <p class="subtitle">
-            Machine Learning Based Cyber Phishing Detection System
-        </p>
+                    <!-- URL Input -->
+                    <div class="input-group">
+                        <input
+                            type="text"
+                            name="url"
+                            id="urlInput"
+                            class="url-input"
+                            placeholder="Enter or paste website URL (e.g. https://example.com)..."
+                            value="{{ url }}"
+                            required
+                        >
+                    </div>
 
+                    <!-- Scan Button -->
+                    <button type="submit" class="btn-scan">
+                        <span>🛡️ Analyze Threat</span>
+                    </button>
+                </div>
 
-        <form method="POST">
-
-            <input
-                type="text"
-                name="url"
-                placeholder="Enter website URL..."
-                value="{{ url }}"
-                required
-            >
-
-            <button type="submit">
-                🔍 CHECK URL
-            </button>
-
-        </form>
-
+                <!-- Quick Samples -->
+                <div class="sample-chips">
+                    <span>Quick Test:</span>
+                    <button type="button" class="chip" onclick="fillUrl('https://leetcode.com/problemset/')">leetcode.com</button>
+                    <button type="button" class="chip" onclick="fillUrl('https://www.google.com')">google.com</button>
+                    <button type="button" class="chip" onclick="fillUrl('https://github.com')">github.com</button>
+                    <button type="button" class="chip phish" onclick="fillUrl('gryuf.co')">gryuf.co (random DGA)</button>
+                    <button type="button" class="chip phish" onclick="fillUrl('gggg.com')">gggg.com (repetitive)</button>
+                    <button type="button" class="chip phish" onclick="fillUrl('ggg.logininfo.com')">ggg.logininfo.com (harvesting)</button>
+                    <button type="button" class="chip phish" onclick="fillUrl('www.worldhealyh.com')">worldhealyh.com (typosquat)</button>
+                    <button type="button" class="chip phish" onclick="fillUrl('http://paypal-login-security.example.com')">paypal-login-fake</button>
+                </div>
+            </form>
+        </div>
 
         {% if result %}
-
-        <!-- Prediction Result -->
-
-        <div class="result {{ result_class }}">
-
-            {{ result }}
-
-            {% if confidence %}
-
-            <div class="confidence">
-                Prediction Confidence:
-                <strong>{{ confidence }}%</strong>
+        <!-- Verdict Banner -->
+        <div class="verdict-banner {{ result_class }}">
+            <div class="verdict-left">
+                <div class="verdict-icon">
+                    {% if result_class == 'danger' %}🚨{% else %}🛡️{% endif %}
+                </div>
+                <div>
+                    <div class="verdict-title">{{ result }}</div>
+                    <div class="verdict-url">{{ url }}</div>
+                </div>
             </div>
-
-            {% endif %}
-
+            <div class="verdict-score">
+                <div class="verdict-score-num">{{ confidence }}%</div>
+                <div class="verdict-score-label">
+                    {% if consensus_summary %}Consensus Confidence{% else %}Model Confidence{% endif %}
+                </div>
+            </div>
         </div>
 
+        {% if threat_intel and threat_intel.is_threat %}
+        <!-- Multi-Vector Threat Intelligence Alert -->
+        <div class="glass-card" style="border: 1px solid rgba(244, 63, 94, 0.45); background: linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(18, 26, 43, 0.85) 100%); margin-bottom: 25px;">
+            <div style="display: flex; align-items: flex-start; gap: 18px;">
+                <div style="font-size: 36px; line-height: 1;">🚨</div>
+                <div style="flex: 1;">
+                    <div style="color: #fb7185; font-weight: 800; font-size: 20px; margin-bottom: 6px;">
+                        Threat Intelligence Alert: High-Risk Phishing Vectors Detected!
+                    </div>
+                    <p style="color: var(--text-primary); font-size: 14px; line-height: 1.6; margin-bottom: 12px;">
+                        The security engine detected <strong>{{ threat_intel.threat_reasons|length }} critical threat indicators</strong> associated with credential theft, deception, and phishing infrastructure:
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+                        {% for reason in threat_intel.threat_reasons %}
+                        <div style="background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3); color: #fecdd3; padding: 8px 14px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+                            <span>⚠️</span> <span>{{ reason }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <span style="background: rgba(244, 63, 94, 0.25); border: 1px solid rgba(244, 63, 94, 0.4); color: #fca5a5; padding: 5px 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+                            🔥 Threat Score: {{ threat_intel.threat_score }}/100
+                        </span>
+                        <span style="background: rgba(244, 63, 94, 0.25); border: 1px solid rgba(244, 63, 94, 0.4); color: #fca5a5; padding: 5px 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 12px;">
+                            🛡️ Security Action: Block & Flag Phishing
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
 
-        <!-- Feature Analysis -->
+        {% if consensus_summary and multi_model_results %}
+        <!-- Multi-Model Consensus Breakdown -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>🤖</span> Multi-Model Consensus Analysis
+                </div>
+                <div class="status-pill {% if consensus_summary.phishing_votes > consensus_summary.total_votes / 2 %}danger{% else %}safe{% endif %}">
+                    {{ consensus_summary.phishing_votes }}/{{ consensus_summary.total_votes }} Models Flagged Phishing
+                </div>
+            </div>
+
+            <div class="models-grid">
+                {% for item in multi_model_results %}
+                <div class="model-card">
+                    <div class="model-card-top">
+                        <div>
+                            <div class="model-name">{{ item.name }}</div>
+                            <div class="model-type">{{ item.type }}</div>
+                        </div>
+                        <span class="status-pill {% if item.is_phishing %}danger{% else %}safe{% endif %}">
+                            {{ item.prediction }}
+                        </span>
+                    </div>
+
+                    <div class="confidence-bar-bg">
+                        <div class="confidence-bar-fill {% if item.is_phishing %}danger{% else %}safe{% endif %}" style="width: {{ item.confidence }}%;"></div>
+                    </div>
+
+                    <div class="model-meta-row">
+                        <span>Confidence: <strong>{{ item.confidence }}%</strong></span>
+                        <span>Benchmark Acc: <strong>{{ item.accuracy }}%</strong></span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
 
         {% if feature_details %}
-
-        <div class="features">
-
-            <h2>🔍 URL Feature Analysis</h2>
-
-
-            {% for name, value in feature_details.items() %}
-
-            <div class="feature">
-
-                <span class="feature-name">
-                    {{ name }}
-                </span>
-
-                <span class="feature-value">
-                    {{ value }}
-                </span>
-
+        <!-- Deep URL Feature Inspector -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>🔍</span> Deep Feature & Heuristic Security Inspection
+                </div>
+                <span style="font-size: 12px; color: var(--text-muted);">15 Extracted Neural Signals</span>
             </div>
 
-            {% endfor %}
-
+            <div class="features-grid">
+                {% for name, data in feature_details.items() %}
+                <div class="feature-box">
+                    <div class="feature-box-title">{{ name }}</div>
+                    <div class="feature-box-val-row">
+                        <span class="feature-box-val">{{ data.value }}</span>
+                        <span class="risk-tag {{ data.risk }}">{{ data.risk }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
         </div>
+        {% endif %}
 
         {% endif %}
 
+        <!-- Model Benchmark Dashboard -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>📊</span> Machine Learning Model Performance Benchmarks
+                </div>
+                <span class="badge-pill" style="margin-bottom:0;">5-Fold Cross Validation</span>
+            </div>
 
-        {% endif %}
-
-
-        <!-- How It Works -->
-
-<div class="how-it-works">
-
-    <h2>⚙️ How It Works</h2>
-
-    <div class="steps">
-
-        <div class="step">
-            <div class="step-icon">🌐</div>
-            <h3>1. URL Input</h3>
-            <p>User enters a website URL</p>
+            <div class="table-responsive">
+                <table class="benchmark-table">
+                    <thead>
+                        <tr>
+                            <th>Model Architecture</th>
+                            <th>Family</th>
+                            <th>Accuracy</th>
+                            <th>Precision</th>
+                            <th>Recall</th>
+                            <th>F1-Score</th>
+                            <th>CV Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, info in available_models.items() %}
+                        <tr>
+                            <td>
+                                <strong>{{ info.name }}</strong>
+                                <div style="font-size: 12px; color: var(--text-muted);">{{ info.description }}</div>
+                            </td>
+                            <td><span style="color: var(--text-secondary);">{{ info.type }}</span></td>
+                            <td><span class="metric-badge">{{ info.accuracy }}%</span></td>
+                            <td><span class="metric-badge">{{ info.precision }}%</span></td>
+                            <td><span class="metric-badge">{{ info.recall }}%</span></td>
+                            <td><span class="metric-badge">{{ info.f1_score }}%</span></td>
+                            <td><span class="metric-badge">{{ info.cv_accuracy }}%</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
-        <div class="arrow">→</div>
+        <!-- Detection Architecture Pipeline -->
+        <div class="glass-card">
+            <div class="section-header">
+                <div class="section-title">
+                    <span>⚙️</span> Detection Pipeline Architecture
+                </div>
+            </div>
 
-        <div class="step">
-            <div class="step-icon">🔍</div>
-            <h3>2. Feature Extraction</h3>
-            <p>URL characteristics are analyzed</p>
+            <div class="pipeline-steps">
+                <div class="pipeline-step">
+                    <div class="step-num">1</div>
+                    <div class="step-title">Lexical Parsing</div>
+                    <div class="step-desc">Dissects URL syntax, scheme, domain length, delimiters, and IP usage.</div>
+                </div>
+
+                <div class="pipeline-step">
+                    <div class="step-num">2</div>
+                    <div class="step-title">Feature Engineering</div>
+                    <div class="step-desc">Computes Shannon character entropy, suspicious tokens, and subdomains.</div>
+                </div>
+
+                <div class="pipeline-step">
+                    <div class="step-num">3</div>
+                    <div class="step-title">Multi-Model Inference</div>
+                    <div class="step-desc">Evaluates vector against 8 ML algorithms including Trees, SVM, & Boosting.</div>
+                </div>
+
+                <div class="pipeline-step">
+                    <div class="step-num">4</div>
+                    <div class="step-title">Ensemble Verdict</div>
+                    <div class="step-desc">Aggregates soft-voting probabilities to deliver high-confidence verdicts.</div>
+                </div>
+            </div>
         </div>
 
-        <div class="arrow">→</div>
-
-        <div class="step">
-            <div class="step-icon">🧠</div>
-            <h3>3. ML Prediction</h3>
-            <p>Random Forest analyzes the features</p>
-        </div>
-
-        <div class="arrow">→</div>
-
-        <div class="step">
-            <div class="step-icon">🛡️</div>
-            <h3>4. Result</h3>
-            <p>Legitimate or phishing result</p>
-        </div>
+        <!-- Footer -->
+        <footer>
+            <p>CyberShield AI • Real-Time Machine Learning Phishing Detection Engine</p>
+            <div class="footer-tech">
+                <span>Python 3.12</span> •
+                <span>Flask</span> •
+                <span>Scikit-Learn</span> •
+                <span>Random Forest</span> •
+                <span>Gradient Boosting</span> •
+                <span>SVM</span> •
+                <span>Voting Ensemble</span>
+            </div>
+        </footer>
 
     </div>
 
-</div>
-
-
-<div class="footer">
-
-    Powered by Machine Learning • Random Forest Classifier
-
-</div>
-
-    </div>
-
+    <script>
+        function fillUrl(sampleUrl) {
+            const input = document.getElementById('urlInput');
+            input.value = sampleUrl;
+            input.focus();
+        }
+    </script>
 </body>
 
 </html>
